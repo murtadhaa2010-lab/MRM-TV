@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MRM TV - تحميل تطبيق البث المباشر</title>
+  
+  <!-- خطوط Google الرسمية -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Chakra+Petch:wght@700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* إعادة التعيين والمتغيرات */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --bg-black: #020408;
+      --navy-deep: #071124;
+      --navy-card: rgba(7, 17, 36, 0.85);
+      --cyan-bright: #00e5ff;
+      --blue-accent: #0066ff;
+      --text-white: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-cyan: rgba(0, 229, 255, 0.28);
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-black);
+      background-image: 
+        radial-gradient(ellipse at 50% 0%, rgba(0, 102, 255, 0.25) 0%, rgba(7, 17, 36, 0.4) 45%, transparent 70%),
+        radial-gradient(circle at 10% 85%, rgba(0, 70, 180, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 90% 85%, rgba(0, 229, 255, 0.1) 0%, transparent 50%),
+        linear-gradient(180deg, #020408 0%, #050b18 50%, #020408 100%);
+      color: var(--text-white);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 16px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* خلفية سيبرانية وشبكة نقطية */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle at 1px 1px, rgba(0, 229, 255, 0.08) 1px, transparent 0);
+      background-size: 32px 32px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 540px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 auto;
+    }
+
+    /* الشريط العلوي */
+    header {
+      width: 100%;
+      max-width: 540px;
+      padding: 12px 6px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0066ff, #00e5ff);
+      padding: 1.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(0, 229, 255, 0.25);
+    }
+
+    .brand-icon-inner {
+      width: 100%;
+      height: 100%;
+      background: #030816;
+      border-radius: 8.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #00e5ff;
+    }
+
+    .brand-name {
+      font-family: 'Chakra Petch', 'Cairo', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      color: #ffffff;
+    }
+
+    .brand-ver {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(0, 229, 255, 0.1);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      color: #70f0ff;
+      font-family: monospace;
+    }
+
+    .live-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(51, 65, 85, 0.8);
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #10b981;
+      box-shadow: 0 0 10px #10b981;
+      animation: pulseDot 2s infinite ease-in-out;
+    }
+
+    .live-text {
+      color: #00e5ff;
+      font-weight: 700;
+      font-family: monospace;
+    }
+
+    /* البطاقة المركزية الرئيسية */
+    .card {
+      width: 100%;
+      background: var(--navy-card);
+      border: 1px solid var(--border-cyan);
+      border-radius: 28px;
+      padding: 38px 28px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 
+        0 25px 60px rgba(0, 0, 0, 0.85),
+        0 0 45px rgba(0, 102, 255, 0.18),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      text-align: center;
+      animation: fadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(22px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* شارة حالة البث */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: rgba(0, 229, 255, 0.08);
+      border: 1px solid rgba(0, 229, 255, 0.32);
+      border-radius: 999px;
+      color: var(--cyan-bright);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: #00ffaa;
+      box-shadow: 0 0 8px #00ffaa;
+    }
+
+    /* منطقة الشعار والأيقونة */
+    .logo-wrapper {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-aura {
+      position: absolute;
+      inset: -12px;
+      border-radius: 30px;
+      background: linear-gradient(135deg, #00e5ff, #0066ff, #4f46e5);
+      opacity: 0.65;
+      filter: blur(16px);
+      animation: pulseAura 4s infinite alternate ease-in-out;
+    }
+
+    @keyframes pulseAura {
+      0% { transform: scale(0.96); opacity: 0.5; }
+      100% { transform: scale(1.05); opacity: 0.8; }
+    }
+
+    .logo-img {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 22px;
+      object-fit: cover;
+      border: 2px solid rgba(0, 229, 255, 0.5);
+      background: #020612;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+      transition: transform 0.4s ease;
+    }
+
+    .logo-wrapper:hover .logo-img {
+      transform: scale(1.04);
+    }
+
+    /* عنوان التطبيق */
+    h1.app-title {
+      font-family: 'Chakra Petch', 'Cairo', sans-serif;
+      font-size: 44px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      background: linear-gradient(135deg, #ffffff 25%, #70f0ff 65%, #0084ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 0 25px rgba(0, 229, 255, 0.35));
+    }
+
+    /* وصف التطبيق */
+    p.app-description {
+      color: #cbd5e1;
+      font-size: 15px;
+      line-height: 1.75;
+      margin-bottom: 32px;
+      padding: 0 4px;
+    }
+
+    /* حزمة أزرار التحميل */
+    .buttons-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+    }
+
+    /* زر تحميل التطبيق الأساسي APK */
+    .btn-primary {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      padding: 16px 24px;
+      background: linear-gradient(135deg, #0066ff 0%, #00aaff 50%, #00e5ff 100%);
+      color: #020817;
+      text-decoration: none;
+      font-size: 17px;
+      font-weight: 900;
+      border-radius: 18px;
+      box-shadow: 
+        0 10px 30px rgba(0, 102, 255, 0.45),
+        0 0 20px rgba(0, 229, 255, 0.3);
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      cursor: pointer;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+      transform: skewX(-25deg);
+      transition: 0.7s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px) scale(1.01);
+      box-shadow: 
+        0 15px 40px rgba(0, 102, 255, 0.65),
+        0 0 30px rgba(0, 229, 255, 0.5);
+      background: linear-gradient(135deg, #0077ff 0%, #22dcff 100%);
+    }
+
+    .btn-primary:hover::before {
+      left: 150%;
+    }
+
+    .btn-primary:active {
+      transform: translateY(0) scale(0.99);
+      box-shadow: 0 4px 15px rgba(0, 102, 255, 0.4);
+    }
+
+    /* زر تحميل الملف الإضافي */
+    .btn-secondary {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px 20px;
+      background: rgba(11, 27, 58, 0.75);
+      color: #f1f5f9;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 14px;
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      backdrop-filter: blur(10px);
+      transition: all 0.25s ease;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(16, 39, 84, 0.95);
+      border-color: rgba(0, 229, 255, 0.6);
+      color: #ffffff;
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 6px 22px rgba(0, 229, 255, 0.2);
+    }
+
+    .btn-secondary:active {
+      transform: translateY(0) scale(0.99);
+    }
+
+    .icon-box {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .btn-secondary .icon-box {
+      width: 28px;
+      height: 28px;
+      background: rgba(0, 229, 255, 0.12);
+      color: #00e5ff;
+    }
+
+    /* شبكة المميزات السريعة */
+    .features-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(51, 65, 85, 0.5);
+      text-align: right;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 9px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .feature-icon {
+      color: var(--cyan-bright);
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    /* دليل التثبيت القابل للطي */
+    .guide-box {
+      width: 100%;
+      margin-top: 18px;
+      border-radius: 18px;
+      background: rgba(6, 14, 29, 0.85);
+      border: 1px solid rgba(30, 41, 59, 0.9);
+      overflow: hidden;
+      font-size: 13px;
+    }
+
+    .guide-header {
+      width: 100%;
+      padding: 14px 18px;
+      background: none;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #cbd5e1;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: right;
+      transition: color 0.2s;
+    }
+
+    .guide-header:hover {
+      color: #ffffff;
+    }
+
+    .guide-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .guide-arrow {
+      transition: transform 0.25s ease;
+      color: #64748b;
+    }
+
+    .guide-arrow.open {
+      transform: rotate(180deg);
+      color: #00e5ff;
+    }
+
+    .guide-content {
+      display: none;
+      padding: 0 18px 16px;
+      color: #94a3b8;
+      border-top: 1px solid rgba(30, 41, 59, 0.8);
+      padding-top: 12px;
+    }
+
+    .guide-content.open {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .guide-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.6;
+    }
+
+    .step-num {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #082142;
+      color: #00e5ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .step-num-text {
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    /* التذييل */
+    footer {
+      width: 100%;
+      padding: 24px 16px 12px;
+      text-align: center;
+      font-size: 12px;
+      color: #64748b;
+      z-index: 10;
+    }
+
+    footer p:last-child {
+      font-size: 11px;
+      color: #475569;
+      margin-top: 4px;
+    }
+
+    /* إشعار بدء التحميل */
+    #download-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      opacity: 0;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(0, 229, 255, 0.5);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 229, 255, 0.3);
+      padding: 12px 22px;
+      border-radius: 16px;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+
+    #download-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 32px 18px;
+        border-radius: 22px;
+      }
+      h1.app-title {
+        font-size: 36px;
+      }
+      .logo-wrapper {
+        width: 105px;
+        height: 105px;
+        margin-bottom: 18px;
+      }
+      .btn-primary {
+        font-size: 16px;
+        padding: 15px 18px;
+      }
+      .features-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- رأس الصفحة العلوي -->
+  <header>
+    <a href="#" class="brand">
+      <div class="brand-icon">
+        <div class="brand-icon-inner">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+            <polyline points="17 2 12 7 7 2"></polyline>
+          </svg>
+        </div>
+      </div>
+      <span class="brand-name">MRM TV</span>
+      <span class="brand-ver">v1.0</span>
+    </a>
+
+    <div class="live-status">
+      <span class="live-dot"></span>
+      <span>السيرفر نشط</span>
+      <span class="live-text">Live</span>
+    </div>
+  </header>
+
+  <div class="wrapper">
+    <!-- البطاقة المركزية للمشاهدة والتحميل -->
+    <main class="card">
+      
+      <!-- شارة حالة البث -->
+      <div class="badge">
+        <span class="badge-dot"></span>
+        <span>البث المباشر يعمل بكفاءة عالية 24/7</span>
+      </div>
+
+      <!-- شعار وأيقونة التطبيق -->
+      <div class="logo-wrapper">
+        <div class="logo-aura"></div>
+        <img src="logo.jpg" alt="شعار تطبيق MRM TV" class="logo-img">
+      </div>
+
+      <!-- عنوان التطبيق -->
+      <h1 class="app-title">MRM TV</h1>
+
+      <!-- وصف البث والتطبيق -->
+      <p class="app-description">
+        تطبيقك الأول لمشاهدة البث المباشر لأقوى القنوات الفضائية والرياضية العالمية والمشفرة بجودة عالية مع مكتبة متجددة بدون تقطيع.
+      </p>
+
+      <!-- أزرار التحميل المباشر -->
+      <div class="buttons-stack">
+        
+        <!-- زر تحميل التطبيق (APK) -->
+        <a 
+          href="https://www.mediafire.com/file/ymtbayfi139lugy/MRM+TV+.apk/file" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="btn-primary" 
+          id="btn-apk"
+          onclick="notifyDownload('تطبيق MRM TV (APK)')"
+        >
+          <div class="icon-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#020817" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+          </div>
+          <span>تحميل التطبيق (APK) - 25 MB</span>
+        </a>
+
+        <!-- زر تحميل الملف الإضافي -->
+        <a 
+          href="https://www.mediafire.com/file/ukd0256savo3fpe/MRM_TV_Backup+%288%29.zip/file" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="btn-secondary" 
+          id="btn-extra"
+          onclick="notifyDownload('الملف الإضافي')"
+        >
+          <div class="icon-box">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="12" y1="18" x2="12" y2="12"></line>
+              <line x1="9" y1="15" x2="15" y2="15"></line>
+            </svg>
+          </div>
+          <span>تحميل الملف الإضافي - 2 KB</span>
+        </a>
+      </div>
+
+      <!-- بطاقات المميزات -->
+      <div class="features-list">
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          <span>خوادم فائقة السرعة</span>
+        </div>
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="2"></circle>
+            <path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path>
+          </svg>
+          <span>جودة تصل إلى 4K UHD</span>
+        </div>
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+          </svg>
+          <span>يدعم الهواتف والشاشات</span>
+        </div>
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          <span>فحص أمني خالي من الفيروسات</span>
+        </div>
+      </div>
+    </main>
+
+    <!-- دليل التثبيت التفاعلي المدمج -->
+    <div class="guide-box">
+      <button class="guide-header" onclick="toggleGuide()">
+        <div class="guide-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <span>طريقة تثبيت التطبيق والملف الإضافي</span>
+        </div>
+        <svg class="guide-arrow" id="guide-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
+
+      <div class="guide-content" id="guide-content">
+        <div class="guide-step">
+          <span class="step-num">1</span>
+          <p>اضغط على زر <span class="step-num-text">تحميل التطبيق (APK)</span>، ثم اسمح بتحميل الملف من المتصفح.</p>
+        </div>
+        <div class="guide-step">
+          <span class="step-num">2</span>
+          <p>توجه إلى إعدادات الهاتف وفعّل خيار <span class="step-num-text">"تثبيت التطبيقات من مصادر غير معروفة"</span> إذا طُلب منك ذلك.</p>
+        </div>
+        <div class="guide-step">
+          <span class="step-num">3</span>
+          <p>قم بتحميل <span class="step-num-text">الملف الإضافي</span> وضعه في مجلد التطبيق أو قم باستيراده من داخل إعدادات MRM TV للاستمتاع بجميع القنوات المشفرة.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- تذييل الصفحة -->
+  <footer>
+    <p>جميع الحقوق محفوظة &copy; 2026 تطبيق MRM TV الرسمي</p>
+    <p>تصميم وتطوير عصري فائق السرعة متوافق مع كافة أنظمة أندرويد</p>
+  </footer>
+
+  <!-- إشعار التنزيل التفاعلي -->
+  <div id="download-toast">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+      <polyline points="7 10 12 15 17 10"></polyline>
+      <line x1="12" y1="15" x2="12" y2="3"></line>
+    </svg>
+    <span id="toast-text">جاري بدء التحميل...</span>
+  </div>
+
+  <script>
+    // التحكم في فتح وإغلاق دليل التثبيت
+    function toggleGuide() {
+      var content = document.getElementById('guide-content');
+      var arrow = document.getElementById('guide-arrow');
+      content.classList.toggle('open');
+      arrow.classList.toggle('open');
+    }
+
+    // إشعار التحميل
+    function notifyDownload(item) {
+      var toast = document.getElementById('download-toast');
+      var text = document.getElementById('toast-text');
+      text.innerText = 'جاري توجيهك لتحميل ' + item + '...';
+      toast.classList.add('show');
+      setTimeout(function() {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+  </script>
+
+</body>
+</html>
